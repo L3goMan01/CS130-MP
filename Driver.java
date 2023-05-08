@@ -3,6 +3,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Driver {
+
+    /**
+     * This is for comparing each possible pair of minterms
+     * and replacing the differing bit with a '-'.
+     * @param binary1 binary form of first minterm in the pair
+     * @param binary2 binary form of second minterm in the pair
+     * @return binary form whose differing bit was replaced by a '-'
+     */
     public static String compareMinTerms(String binary1, String binary2) {
         int count = 0; // How many bits differ between the two binary numbers
         int location = 0; // At which bit location is that difference
@@ -22,6 +30,12 @@ public class Driver {
         return null; // Return null if the bit difference count is not exactly 1
     }
 
+    /**
+     * This is for taking the initial list of minterms for prime implicant selection
+     * and removing any duplicates that may complicate prime implicant selection.
+     * @param list The list containing the minterms after the minterm pair selection process
+     * @return The list of minterms with no duplicate pairs
+     */
     public static List<List<String>> cleanUpList(List<List<String>> list) {
         List<List<String>> cleaned = new ArrayList<>(list); // Make list with all minterms (which may contain duplicates)
         List<String> binaryStorage = new ArrayList<>(); // To store the binary numbers that we find, which will be used to determine duplicates
@@ -38,6 +52,13 @@ public class Driver {
         return cleaned; // Return list with all duplicates removed (if found any)
     }
 
+    /**
+     * This is for finding the prime implicants of the given equation.
+     * @param minTermList The list containing the minterms the user input
+     * @param minterms The list of minterms from the minterm pair selection process
+     *                 that will be used for prime implicant selection
+     * @return The list containing the prime implicants used for the final simplified equation
+     */
     public static List<List<String>> findPrimeImplic(String[] minTermList, List<List<String>> minterms) {
         List<String> header = new ArrayList<>(Arrays.asList(minTermList)); // List to store the header which consist of the minterm numbers
         List<String[]> rowList = new ArrayList<>(); // List to keep lists for the rows
@@ -55,7 +76,7 @@ public class Driver {
             for (int j = 0; j < size-1; j++) {
                 String[] curr = rowList.get(i); // Getting the ith row
                 if (header.contains(minterms.get(i).get(j))) {
-                    curr[header.indexOf(minterms.get(i).get(j))] = "X"; // Placing an X at the index of the corresponding minterm number from the header
+                    curr[header.indexOf(minterms.get(i).get(j))] = "✘"; // Placing an X at the index of the corresponding minterm number from the header
                 }
             }
         }
@@ -63,12 +84,12 @@ public class Driver {
         // Printing the prime implicants table
         System.out.println("Finding the Prime Implicants:");
         StringBuilder headerStr = new StringBuilder();
-        headerStr.append("Minterms").append("\t").append("|").append("\t");
+        headerStr.append("Minterms").append("\t").append("┇").append("\t");
         for (String head : header) {
             headerStr.append(head).append("\t"); // Appending header numbers to the header output
         }
         System.out.println(headerStr);
-        System.out.println("=".repeat(70));
+        System.out.println("▪".repeat(70));
 
         for (int i = 0; i < rowList.size(); i++) { // For each row in rowList, do...
             StringBuilder rowStr = new StringBuilder();
@@ -86,13 +107,13 @@ public class Driver {
             else if (rowStr.length()==4 || rowStr.length()==5 || rowStr.length()==7) {
                 len = 2;
             }
-            rowStr.append("\t".repeat(len)).append("|").append("\t");
+            rowStr.append("\t".repeat(len)).append("┇").append("\t");
             for (int j = 0; j < rowList.get(i).length; j++) {
                 String[] row = rowList.get(i);
                 rowStr.append(row[j]).append("\t"); // Adding the X's
             }
             System.out.println(rowStr);
-            System.out.println("-".repeat(70));
+            System.out.println("▫".repeat(70));
         }
 
         List<Integer> countArray = new ArrayList<>(); // List to keep track of how many X's are in each column
@@ -100,7 +121,7 @@ public class Driver {
             int count = 0;
             for (int j = 0; j < rowList.size(); j++) {
                 String[] cur = rowList.get(j);
-                if (cur[i] == "X") {
+                if (cur[i] == "✘") {
                     count += 1;
                 }
             }
@@ -119,7 +140,7 @@ public class Driver {
             if (countArray.get(i) == 1) {
                 for (int j = 0; j < rowList.size(); j++) {
                     String[] cur = rowList.get(j);
-                    if (cur[i] == "X") {
+                    if (cur[i] == "✘") {
                         if (!locationArray.contains(j)) {
                             locationArray.add(j); // Storing the position of the used array
                         }
@@ -170,6 +191,12 @@ public class Driver {
         return result;
     }
 
+    /**
+     * This is for taking a minterm's binary representation and converting it to equation form.
+     * @param term The list form of the minterm (the pair of minterms and the binary representation it creates)
+     * @param prefVar The list of preferred variables the user input
+     * @return The converted minterm in equation form.
+     */
     public static String convertTerm(List<String> term, String[] prefVar) {
         StringBuilder result = new StringBuilder(); // We use a StringBuilder so that we can keep appending to it
         int size = term.size(); // Gets the size of the minterm list so that we can get specific elements in it
@@ -185,9 +212,14 @@ public class Driver {
         return result.toString(); // Return the final term
     }
 
+    /**
+     * This is for printing the maps which contain the groups
+     * for each round of minterm pair selection
+     * @param map The map of the current round of minterm pair selection
+     */
     public static void printTable(Map<Integer,List<List<String>>> map) {
         System.out.println("Group (# of 1's)" + "\t".repeat(2) + "Minterms" + "\t".repeat(5) + "Binary");
-        System.out.println("=".repeat(70));
+        System.out.println("◆".repeat(70));
         map.forEach((key,value) -> { // For each key (# of 1's in binary) and value (list containing minterms)
             System.out.println(key + ":"); // Print count of 1's in binary to show group
             for (int i = 0; i < value.size(); i++) { // For each minterm in list
@@ -204,7 +236,7 @@ public class Driver {
                 }
                 System.out.println("\t".repeat(6) + print); // Print the resulting line
             }
-            System.out.println("-".repeat(70));
+            System.out.println("◇".repeat(70));
         });
         System.out.println();
     }
