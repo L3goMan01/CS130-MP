@@ -53,11 +53,11 @@ public class Driver {
     }
 
     /**
-     * This is for finding the prime implicants of the given equation.
+     * This is for finding the essential prime implicants of the given equation.
      * @param minTermList The list containing the minterms the user input
      * @param minterms The list of minterms from the minterm pair selection process
      *                 that will be used for prime implicant selection
-     * @return The list containing the prime implicants used for the final simplified equation
+     * @return The list containing the essential prime implicants used for the final simplified equation
      */
     public static List<List<String>> findPrimeImplic(String[] minTermList, List<List<String>> minterms) {
         List<String> header = new ArrayList<>(Arrays.asList(minTermList)); // List to store the header which consist of the minterm numbers
@@ -81,8 +81,8 @@ public class Driver {
             }
         }
 
-        // Printing the prime implicants table
-        System.out.println("Finding the Prime Implicants:");
+        // Printing the essential prime implicants table
+        System.out.println("Finding the Essential Prime Implicants:");
         StringBuilder headerStr = new StringBuilder();
         headerStr.append("Minterms").append("\t").append("┇").append("\t");
         for (String head : header) {
@@ -241,6 +241,11 @@ public class Driver {
         System.out.println();
     }
 
+    /**
+     * This is the main running method in this program. Responsible for handling the
+     * user input, minterm pair selection process and printing the final equation.
+     * @param args Unused
+     */
     public static void main(String[] args) {
 
         System.out.println("\nTHE TABULATION METHOD\n");
@@ -374,7 +379,7 @@ public class Driver {
             List<List<String>> afterEPI = findPrimeImplic(mt_list,finalMinTerms); // Finding the essential prime implicants
 
             StringBuilder epiStr = new StringBuilder();
-            epiStr.append("Prime Implicants: ");
+            epiStr.append("Essential Prime Implicants: ");
             for (int i = 0; i < afterEPI.size(); i++) {
                 List<String> term = afterEPI.get(i);
                 epiStr.append("(");
